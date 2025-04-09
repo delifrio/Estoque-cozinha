@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#000000" />
+  <title>Estoque Cozinha</title>
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+      });
+    }
+  </script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #111;
+      color: #fff;
+      padding: 10px;
+    }
+    h2 {
+      border-bottom: 2px solid #444;
+      padding-bottom: 5px;
+      margin-top: 20px;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid #444;
+      margin: 5px 0;
+      border-radius: 5px;
+      background: #222;
+    }
+    .buttons button {
+      margin-left: 5px;
+      padding: 5px 10px;
+    }
+    .buttons {
+      display: flex;
+      gap: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Estoque Cozinha</h1>
+  <div id="estoque"></div>  <script>
+    const dados = {
+      "Cozinha": ["Óleo de algodão", "Panco", "trigo", "caldo de galinha", "amaciante", "arroz", "macarrão", "óleo", "vinagre", "colorau", "sal", "Molho de tomate", "azeite", "feijão mulatim", "feijão verde", "leite", "creme de leite", "leite condensado", "ovo de codorna", "ovo de galinha", "farinha", "óleo vegetal", "salça", "coentro", "bacon", "alho", "batata frita", "presunto", "mussarela", "batata palha", "maionese", "Champion", "macarrão de lasanha", "açúcar", "charque", "queijo ralado", "manteiga", "ketchup", "mostarda"],
+      "Descartáveis": ["bobina de 1 kg", "bobina de 2 kg", "Plastico Filme", "papel alumínio", "vasilha pra viagem"],
+      "Limpeza": ["polidor", "veja", "detergente", "água sanitária", "Bombril", "sabão em barra", "sabão em pó", "bucha de lavar prato", "saco de lixo", "papel higiênico", "neftalina", "desinfetante", "saco de lixo azul"]
+    };
+
+    function carregarEstoque() {
+      const container = document.getElementById('estoque');
+      container.innerHTML = '';
+      for (const categoria in dados) {
+        const titulo = document.createElement('h2');
+        titulo.textContent = categoria;
+        container.appendChild(titulo);
+
+        dados[categoria].forEach(item => {
+          const quantidade = localStorage.getItem(item) || 0;
+          const div = document.createElement('div');
+          div.className = 'item';
+
+          const nome = document.createElement('span');
+          nome.textContent = item;
+
+          const qtd = document.createElement('span');
+          qtd.textContent = quantidade;
+          qtd.id = `qtd-${item}`;
+          qtd.style.color = quantidade <= 7 ? 'lime' : 'red';
+
+          const botoes = document.createElement('div');
+          botoes.className = 'buttons';
+
+          const btnAdd = document.createElement('button');
+          btnAdd.textContent = '+';
+          btnAdd.onclick = () => atualizar(item, 1);
+
+          const btnRem = document.createElement('button');
+          btnRem.textContent = '-';
+          btnRem.onclick = () => atualizar(item, -1);
+
+          botoes.appendChild(btnAdd);
+          botoes.appendChild(btnRem);
+
+          div.appendChild(nome);
+          div.appendChild(qtd);
+          div.appendChild(botoes);
+          container.appendChild(div);
+        });
+      }
+    }
+
+    function atualizar(item, delta) {
+      let valor = parseInt(localStorage.getItem(item)) || 0;
+      valor = Math.max(0, valor + delta);
+      localStorage.setItem(item, valor);
+      document.getElementById(`qtd-${item}`).textContent = valor;
+      document.getElementById(`qtd-${item}`).style.color = valor <= 7 ? 'lime' : 'red';
+    }
+
+    window.onload = carregarEstoque;
+  </script></body>
+</html>
